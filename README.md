@@ -125,6 +125,20 @@ The bot checks whether the stock's latest move agrees with the event direction a
 
 For earnings and guidance events, the system gives some attention to the idea that markets can underreact at first and drift afterward. This is handled cautiously and only as one part of the score.
 
+### Buy The Dip, But Not Blindly
+
+The bot has an overreaction module for the classic "buy the dip" idea. It does not buy simply because a stock is red.
+
+It looks for a sharper pattern:
+
+- the stock is down meaningfully over one day
+- it is underperforming SPY
+- it is also weak versus QQQ over the recent window, or volume suggests an exaggerated move
+- Codex has not classified the event as a real bearish thesis break
+- there is no high-reliability SEC/company-style bearish event blocking the trade
+
+If those conditions line up, the bot can treat the move as a possible overreaction and allow a small long paper entry. The position is deliberately smaller than a normal high-conviction event trade, because a dip can be either opportunity or warning.
+
 ### Adaptive Review
 
 The bot reviews its own results. Weak performance makes it more conservative. Enough positive realized evidence can cautiously let sizing return toward baseline.
@@ -188,6 +202,7 @@ The bot has several ways to say no:
 - stop tightening after drawdown
 - avoid duplicate events
 - prefer hold when the source is noisy
+- avoid buying dips when the evidence looks thesis-breaking
 - require valid market prices
 - run performance review after execution
 
@@ -260,4 +275,3 @@ The README uses market imagery from Wikimedia Commons:
 ## Disclaimer
 
 This repository is for research and education. It is not financial advice, not an investment recommendation, and not a real-money trading system. The broker is local paper simulation unless you deliberately replace it with something else.
-

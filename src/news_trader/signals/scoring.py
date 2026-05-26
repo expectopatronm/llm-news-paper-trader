@@ -5,6 +5,7 @@ from datetime import date
 
 from news_trader.config import TradingConfig
 from news_trader.signals.adaptive import AdaptiveState
+from news_trader.signals.dip import evaluate_buy_the_dip
 from news_trader.sources.event_calendar import UpcomingEvent
 from news_trader.sources.market_data import MarketFeatures
 from news_trader.storage import SourceItem
@@ -95,6 +96,7 @@ def build_signal(
     pead = _pead_score(event_type, surprise, features, trading.pead_follow_through_weight)
     priced_in_penalty = _priced_in_penalty(item, surprise, features, upcoming_events, trading.priced_in_penalty_weight)
     pre_event_boost = _pre_event_boost(item, upcoming_events)
+    dip_signal = evaluate_buy_the_dip(item, classification, features, trading)
 
     confidence = _bounded(
         0.18
@@ -105,18 +107,23 @@ def build_signal(
         + price_confirmation
         + pead
         + pre_event_boost
+        + dip_signal.confidence_boost
         - priced_in_penalty
         + adaptive.confidence_adjustment,
         0,
         1,
     )
-    direction = _direction(classification, surprise)
+    if dip_signal.active:
+        confidence = max(confidence, min(0.74, trading.min_confidence + 0.02))
+    direction = max(0.36, _direction(classification, surprise)) if dip_signal.active else _direction(classification, surprise)
     action = _action(direction, confidence, trading, existing_quantity)
     target_notional = _target_notional(confidence, trading, portfolio_equity, item.source) * adaptive.position_size_multiplier
+    if dip_signal.active and action == "buy":
+        target_notional *= dip_signal.position_multiplier
     if action == "hold":
         target_notional = 0.0
 
-    reason = _reason(item, event_type, direction, confidence, price_confirmation, priced_in_penalty, pead)
+    reason = _reason(item, event_type, direction, confidence, price_confirmation, priced_in_penalty, pead, dip_signal.reason if dip_signal.active else None)
     return TradeSignal(
         ticker=item.ticker,
         action=action,
@@ -133,6 +140,10 @@ def build_signal(
             "pead": round(pead, 4),
             "priced_in_penalty": round(priced_in_penalty, 4),
             "pre_event_boost": round(pre_event_boost, 4),
+            "buy_dip_active": "true" if dip_signal.active else "false",
+            "buy_dip_confidence_boost": round(dip_signal.confidence_boost, 4),
+            "buy_dip_position_multiplier": round(dip_signal.position_multiplier, 4),
+            "buy_dip_reason": dip_signal.reason,
             "adaptive_confidence_adjustment": round(adaptive.confidence_adjustment, 4),
             "adaptive_position_size_multiplier": round(adaptive.position_size_multiplier, 4),
             "adaptive_reason": adaptive.reason,
@@ -272,6 +283,7 @@ def _reason(
     price_confirmation: float,
     priced_in_penalty: float,
     pead: float,
+    dip_reason: str | None = None,
 ) -> str:
     direction_text = "bullish" if direction > 0 else "bearish" if direction < 0 else "unclear"
     parts = [
@@ -284,6 +296,8 @@ def _reason(
         parts.append("earnings/guidance follow-through boost applied")
     if priced_in_penalty > 0:
         parts.append("priced-in run-up penalty applied")
+    if dip_reason:
+        parts.append(dip_reason)
     parts.append(item.title)
     return "; ".join(parts)
 

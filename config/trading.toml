@@ -16,3 +16,12 @@ pead_follow_through_weight = 0.08
 
 # Higher means the bot is more cautious when a stock has already run up before an event.
 priced_in_penalty_weight = 0.12
+
+# Event-aware buy-the-dip / overreaction module.
+buy_dip_enabled = true
+buy_dip_min_drop_1d = -0.03
+buy_dip_min_relative_drop_spy = -0.02
+buy_dip_min_relative_drop_qqq_5d = -0.03
+buy_dip_volume_ratio_min = 1.10
+buy_dip_confidence_boost = 0.18
+buy_dip_position_multiplier = 0.55

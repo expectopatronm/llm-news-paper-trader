@@ -30,6 +30,13 @@ class TradingConfig:
     paper_broker: str
     pead_follow_through_weight: float
     priced_in_penalty_weight: float
+    buy_dip_enabled: bool
+    buy_dip_min_drop_1d: float
+    buy_dip_min_relative_drop_spy: float
+    buy_dip_min_relative_drop_qqq_5d: float
+    buy_dip_volume_ratio_min: float
+    buy_dip_confidence_boost: float
+    buy_dip_position_multiplier: float
 
 
 @dataclass(frozen=True)
