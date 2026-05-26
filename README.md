@@ -229,7 +229,7 @@ else:
   report
 ```
 
-The current Codex automation is hourly because the earlier half-hour schedule was not interpreted correctly by the Codex scheduler. The script itself still gates real paper execution by U.S. market hours.
+The current Codex automation is configured for a 30-minute cadence. The script itself still gates real paper execution by U.S. market hours, so an automation tick outside the market window runs review/report behavior rather than collecting and classifying new trade candidates.
 
 ---
 
