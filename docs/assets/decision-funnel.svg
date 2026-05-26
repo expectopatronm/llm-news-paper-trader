@@ -1,0 +1,53 @@
+<svg width="1200" height="520" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Decision funnel for the Codex event trader</title>
+  <desc id="desc">A layered funnel showing sources, Codex classification, deterministic scoring, risk controls, and paper execution.</desc>
+  <rect width="1200" height="520" fill="#0f172a"/>
+  <rect x="36" y="36" width="1128" height="448" rx="26" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <text x="70" y="90" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">How a headline becomes a paper trade</text>
+  <text x="70" y="124" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="17">Codex reads evidence. Python decides whether the evidence is strong enough to risk virtual capital.</text>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <rect x="70" y="175" width="190" height="190" rx="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+    <text x="98" y="220" fill="#e0f2fe" font-size="22" font-weight="700">Fixed Sources</text>
+    <text x="98" y="258" fill="#cbd5e1" font-size="16">SEC EDGAR</text>
+    <text x="98" y="286" fill="#cbd5e1" font-size="16">Nasdaq calendar</text>
+    <text x="98" y="314" fill="#cbd5e1" font-size="16">Yahoo RSS</text>
+    <text x="98" y="342" fill="#cbd5e1" font-size="16">Market data</text>
+
+    <path d="M280 270 H350" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <rect x="370" y="175" width="190" height="190" rx="18" fill="#172554" stroke="#60a5fa" stroke-width="2"/>
+    <text x="407" y="220" fill="#dbeafe" font-size="22" font-weight="700">Codex</text>
+    <text x="400" y="258" fill="#cbd5e1" font-size="16">Classifies event</text>
+    <text x="400" y="286" fill="#cbd5e1" font-size="16">Extracts evidence</text>
+    <text x="400" y="314" fill="#cbd5e1" font-size="16">Writes strict JSON</text>
+    <text x="400" y="342" fill="#cbd5e1" font-size="16">Does not trade</text>
+
+    <path d="M580 270 H650" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <rect x="670" y="175" width="190" height="190" rx="18" fill="#14532d" stroke="#4ade80" stroke-width="2"/>
+    <text x="703" y="220" fill="#dcfce7" font-size="22" font-weight="700">Scoring</text>
+    <text x="700" y="258" fill="#cbd5e1" font-size="16">Surprise</text>
+    <text x="700" y="286" fill="#cbd5e1" font-size="16">Momentum</text>
+    <text x="700" y="314" fill="#cbd5e1" font-size="16">Priced-in risk</text>
+    <text x="700" y="342" fill="#cbd5e1" font-size="16">Adaptive review</text>
+
+    <path d="M880 270 H950" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+    <rect x="970" y="175" width="150" height="190" rx="18" fill="#3f1d1d" stroke="#fb7185" stroke-width="2"/>
+    <text x="1005" y="220" fill="#ffe4e6" font-size="22" font-weight="700">Risk</text>
+    <text x="1000" y="258" fill="#cbd5e1" font-size="16">Size caps</text>
+    <text x="1000" y="286" fill="#cbd5e1" font-size="16">Drawdown</text>
+    <text x="1000" y="314" fill="#cbd5e1" font-size="16">Market hours</text>
+    <text x="1000" y="342" fill="#cbd5e1" font-size="16">Paper order</text>
+  </g>
+
+  <text x="70" y="432" fill="#94a3b8" font-family="Segoe UI, Arial, sans-serif" font-size="16">The LLM is deliberately boxed in: it can describe the event, but Python owns state, sizing, risk, and execution.</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg>
+

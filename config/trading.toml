@@ -1,0 +1,18 @@
+starting_cash_usd = 1000.0
+base_position_pct = 0.12
+max_position_pct = 0.25
+max_short_position_pct = 0.20
+max_gross_exposure_pct = 1.25
+max_new_trades_per_day = 0
+min_confidence = 0.68
+max_drawdown_pct = 0.10
+allow_shorts = true
+allow_fractional = true
+min_notional_usd = 10.0
+paper_broker = "local"
+
+# Higher means the bot is more willing to trade after the first market reaction.
+pead_follow_through_weight = 0.08
+
+# Higher means the bot is more cautious when a stock has already run up before an event.
+priced_in_penalty_weight = 0.12

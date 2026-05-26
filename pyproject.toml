@@ -1,0 +1,16 @@
+[project]
+name = "llm-news-paper-trader"
+version = "0.1.0"
+description = "Paper-trading bot that scans filings/news and runs a 30-day LLM-assisted experiment."
+requires-python = ">=3.11"
+dependencies = [
+  "openai>=1.0.0",
+  "alpaca-py>=0.28.0",
+  "tzdata>=2025.2",
+]
+
+[project.scripts]
+news-trader = "news_trader.main:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

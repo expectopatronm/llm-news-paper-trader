@@ -1,0 +1,5 @@
+sec_enabled = true
+yahoo_rss_enabled = true
+event_calendar_enabled = true
+max_items_per_source = 8
+calendar_lookahead_days = 14

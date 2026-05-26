@@ -1,0 +1,42 @@
+# This is the fixed source plan. The LLM does not choose these sources.
+# The pipeline walks this registry in priority/order on every run.
+
+[[source]]
+id = "event_calendar"
+enabled = true
+priority = 10
+cadence = "every_run"
+scope = "all_tickers"
+tool = "news_trader.sources.event_calendar.fetch_upcoming_events"
+purpose = "Pre-event awareness for earnings expectations and priced-in risk."
+reliability = "medium"
+
+[[source]]
+id = "sec_edgar"
+enabled = true
+priority = 20
+cadence = "every_run"
+scope = "per_ticker"
+tool = "news_trader.sources.sec_edgar.fetch_recent_filings"
+purpose = "Official SEC filings: 8-K, 10-Q, 10-K, proxy, insider forms."
+reliability = "high"
+
+[[source]]
+id = "yahoo_rss"
+enabled = true
+priority = 30
+cadence = "every_run"
+scope = "per_ticker"
+tool = "news_trader.sources.yahoo_rss.fetch_news"
+purpose = "Recent ticker-level financial news headlines."
+reliability = "medium"
+
+[[source]]
+id = "market_data"
+enabled = true
+priority = 40
+cadence = "every_run"
+scope = "per_ticker_plus_benchmarks"
+tool = "news_trader.sources.market_data.market_features"
+purpose = "Latest price, momentum, volume, SPY/QQQ-relative context."
+reliability = "medium"

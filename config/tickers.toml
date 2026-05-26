@@ -1,0 +1,42 @@
+# Configurable starter universe. Chosen from current large-cap U.S.-listed names.
+# Keep this fixed during a 30-day test unless you deliberately want universe churn.
+[[ticker]]
+symbol = "NVDA"
+name = "NVIDIA"
+
+[[ticker]]
+symbol = "AAPL"
+name = "Apple"
+
+[[ticker]]
+symbol = "MSFT"
+name = "Microsoft"
+
+[[ticker]]
+symbol = "GOOGL"
+name = "Alphabet Class A"
+
+[[ticker]]
+symbol = "AMZN"
+name = "Amazon"
+
+[[ticker]]
+symbol = "AVGO"
+name = "Broadcom"
+
+[[ticker]]
+symbol = "META"
+name = "Meta Platforms"
+
+[[ticker]]
+symbol = "TSLA"
+name = "Tesla"
+
+[[ticker]]
+symbol = "BRK.B"
+name = "Berkshire Hathaway Class B"
+
+[[ticker]]
+symbol = "JPM"
+name = "JPMorgan Chase"
+

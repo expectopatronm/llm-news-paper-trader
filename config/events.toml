@@ -1,0 +1,10 @@
+# Optional manual calendar overlay.
+# Add confirmed events here when a company IR page announces one and the public
+# calendar source has not picked it up yet.
+#
+# [[event]]
+# symbol = "AAPL"
+# event_type = "earnings"
+# date = "2026-07-30"
+# description = "Expected quarterly earnings release"
+# source_url = "https://investor.apple.com/"

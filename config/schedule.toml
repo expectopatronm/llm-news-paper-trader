@@ -1,0 +1,6 @@
+interval_minutes = 30
+timezone = "Europe/Berlin"
+trade_market_hours_only = true
+scan_outside_market_hours = true
+market_timezone = "America/New_York"
+

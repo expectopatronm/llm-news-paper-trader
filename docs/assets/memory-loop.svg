@@ -1,0 +1,42 @@
+<svg width="1200" height="520" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">The bot's memory and feedback loop</title>
+  <desc id="desc">A circular loop showing events, classifications, trades, positions, reviews, and adaptive state.</desc>
+  <rect width="1200" height="520" fill="#f8fafc"/>
+  <rect x="40" y="40" width="1120" height="440" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="78" y="96" fill="#0f172a" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">The bot remembers, then adjusts</text>
+  <text x="78" y="130" fill="#475569" font-family="Segoe UI, Arial, sans-serif" font-size="17">SQLite is not just storage. It is the paper account's memory.</text>
+
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="17">
+    <circle cx="600" cy="285" r="128" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/>
+    <text x="536" y="278" fill="#0f172a" font-size="28" font-weight="700">bot.sqlite</text>
+    <text x="507" y="312" fill="#334155">events, decisions, trades</text>
+
+    <rect x="95" y="185" width="200" height="72" rx="14" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="132" y="230" fill="#0f172a" font-weight="700">New evidence</text>
+
+    <rect x="905" y="185" width="200" height="72" rx="14" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="944" y="230" fill="#0f172a" font-weight="700">Paper orders</text>
+
+    <rect x="905" y="345" width="200" height="72" rx="14" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="938" y="390" fill="#0f172a" font-weight="700">Performance</text>
+
+    <rect x="95" y="345" width="200" height="72" rx="14" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="135" y="390" fill="#0f172a" font-weight="700">Adaptive state</text>
+
+    <path d="M300 222 C390 190 440 190 487 230" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+    <path d="M714 230 C780 190 835 190 900 222" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+    <path d="M1005 260 V340" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+    <path d="M900 382 C790 438 690 438 656 405" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+    <path d="M487 405 C390 438 300 415 295 382" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+    <path d="M195 345 V260" stroke="#64748b" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  </g>
+
+  <text x="78" y="452" fill="#475569" font-family="Segoe UI, Arial, sans-serif" font-size="16">When performance is weak, the next runs become more cautious. When evidence improves, sizing can cautiously return to baseline.</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+    </marker>
+  </defs>
+</svg>
+
