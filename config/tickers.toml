@@ -1,4 +1,4 @@
-# Configurable starter universe. Chosen from current large-cap U.S.-listed names.
+# Configurable starter universe. Chosen from current large-cap, liquid U.S.-listed names.
 # Keep this fixed during a 30-day test unless you deliberately want universe churn.
 [[ticker]]
 symbol = "NVDA"
@@ -40,3 +40,62 @@ name = "Berkshire Hathaway Class B"
 symbol = "JPM"
 name = "JPMorgan Chase"
 
+[[ticker]]
+symbol = "LLY"
+name = "Eli Lilly"
+
+[[ticker]]
+symbol = "V"
+name = "Visa"
+
+[[ticker]]
+symbol = "MA"
+name = "Mastercard"
+
+[[ticker]]
+symbol = "NFLX"
+name = "Netflix"
+
+[[ticker]]
+symbol = "ORCL"
+name = "Oracle"
+
+[[ticker]]
+symbol = "WMT"
+name = "Walmart"
+
+[[ticker]]
+symbol = "COST"
+name = "Costco"
+
+[[ticker]]
+symbol = "XOM"
+name = "Exxon Mobil"
+
+[[ticker]]
+symbol = "UNH"
+name = "UnitedHealth Group"
+
+[[ticker]]
+symbol = "HD"
+name = "Home Depot"
+
+[[ticker]]
+symbol = "PG"
+name = "Procter & Gamble"
+
+[[ticker]]
+symbol = "JNJ"
+name = "Johnson & Johnson"
+
+[[ticker]]
+symbol = "BAC"
+name = "Bank of America"
+
+[[ticker]]
+symbol = "AMD"
+name = "Advanced Micro Devices"
+
+[[ticker]]
+symbol = "CRM"
+name = "Salesforce"

@@ -37,7 +37,7 @@ The bot does not let the LLM wander around the internet. The source plan is fixe
 | Yahoo Finance RSS | Fresh ticker-level headlines | Broad market/news awareness, but noisy |
 | Market data | Latest prices, momentum, volume, SPY/QQQ-relative moves | Tells whether the market has already reacted |
 
-The first portfolio universe is deliberately small: large, liquid U.S.-listed names such as NVIDIA, Apple, Microsoft, Alphabet, Amazon, Broadcom, Meta, Tesla, Berkshire Hathaway, and JPMorgan.
+The first portfolio universe is deliberately focused but no longer tiny: 25 large, liquid U.S.-listed names across technology, communication services, consumer, healthcare, finance, payments, retail, and energy. The current basket includes NVIDIA, Apple, Microsoft, Alphabet, Amazon, Broadcom, Meta, Tesla, Berkshire Hathaway, JPMorgan, Eli Lilly, Visa, Mastercard, Netflix, Oracle, Walmart, Costco, Exxon Mobil, UnitedHealth, Home Depot, Procter & Gamble, Johnson & Johnson, Bank of America, AMD, and Salesforce.
 
 ---
 
