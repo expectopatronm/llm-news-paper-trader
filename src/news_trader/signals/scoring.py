@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime, timezone
 
 from news_trader.config import TradingConfig
 from news_trader.signals.adaptive import AdaptiveState
@@ -56,16 +56,10 @@ BULLISH = [
     "acquisition",
     "approval",
     "wins",
-    "buy",
     "boost",
     "rebound",
     "record high",
-    "cheap",
-    "perfect time",
-    "well-positioned",
-    "demand",
     "expansion",
-    "lead",
 ]
 
 BEARISH = [
@@ -84,12 +78,42 @@ BEARISH = [
     "recall",
     "delay",
     "decline",
+    "declines",
     "falls",
+    "fell",
+    "drop",
+    "drops",
+    "dropped",
     "slump",
+    "slowdown",
     "pressure",
     "risk",
     "warning",
     "struggling",
+    "tumble",
+    "tumbles",
+    "tumbled",
+    "tumbling",
+    "plunge",
+    "plunges",
+    "plunged",
+    "weak demand",
+    "sales decline",
+    "sales fall",
+    "sales slump",
+    "shipments fall",
+    "margin pressure",
+]
+
+PROMOTIONAL_OR_LOW_SIGNAL = [
+    "stocks to buy",
+    "best stocks",
+    "perfect time to buy",
+    "screaming buy",
+    "undervalued",
+    "cheap stock",
+    "could soar",
+    "millionaire-maker",
 ]
 
 
@@ -108,6 +132,7 @@ def build_signal(
     source_score = SOURCE_RELIABILITY.get(item.source, 0.06)
     importance = EVENT_IMPORTANCE.get(event_type, EVENT_IMPORTANCE["other"])
     surprise = _surprise_score(item, classification)
+    guard = _classification_guard(item, classification, surprise)
     llm_conf = _bounded(float(classification.get("confidence", 0.5) or 0.5), 0, 1)
     price_confirmation = _price_confirmation(surprise, features)
     pead = _pead_score(event_type, surprise, features, trading.pead_follow_through_weight)
@@ -126,6 +151,7 @@ def build_signal(
         + pre_event_boost
         + dip_signal.confidence_boost
         - priced_in_penalty
+        - guard["penalty"]
         + adaptive.confidence_adjustment,
         0,
         1,
@@ -133,6 +159,9 @@ def build_signal(
     if dip_signal.active:
         confidence = max(confidence, min(0.74, trading.min_confidence + 0.02))
     direction = max(0.36, _direction(classification, surprise)) if dip_signal.active else _direction(classification, surprise)
+    if guard["force_hold"]:
+        direction = 0.0
+        confidence = min(confidence, trading.min_confidence - 0.01)
     action = _action(direction, confidence, trading, existing_quantity)
     target_notional = _target_notional(confidence, trading, portfolio_equity, item.source) * adaptive.position_size_multiplier
     if dip_signal.active and action == "buy":
@@ -140,7 +169,17 @@ def build_signal(
     if action == "hold":
         target_notional = 0.0
 
-    reason = _reason(item, event_type, direction, confidence, price_confirmation, priced_in_penalty, pead, dip_signal.reason if dip_signal.active else None)
+    reason = _reason(
+        item,
+        event_type,
+        direction,
+        confidence,
+        price_confirmation,
+        priced_in_penalty,
+        pead,
+        dip_signal.reason if dip_signal.active else None,
+        guard["reason"],
+    )
     return TradeSignal(
         ticker=item.ticker,
         action=action,
@@ -156,6 +195,9 @@ def build_signal(
             "price_confirmation": round(price_confirmation, 4),
             "pead": round(pead, 4),
             "priced_in_penalty": round(priced_in_penalty, 4),
+            "classification_guard_penalty": round(float(guard["penalty"]), 4),
+            "classification_guard_force_hold": "true" if guard["force_hold"] else "false",
+            "classification_guard_reason": str(guard["reason"]),
             "pre_event_boost": round(pre_event_boost, 4),
             "buy_dip_active": "true" if dip_signal.active else "false",
             "buy_dip_confidence_boost": round(dip_signal.confidence_boost, 4),
@@ -209,6 +251,110 @@ def _surprise_score(item: SourceItem, classification: dict) -> float:
     if "worse than expected" in text or "below expectations" in text:
         score -= 0.25
     return _bounded(score, -1, 1)
+
+
+def _classification_guard(item: SourceItem, classification: dict, surprise: float) -> dict[str, float | bool | str]:
+    bias = str(classification.get("directional_bias", "")).lower()
+    event_type = str(classification.get("event_type") or _event_type(item)).lower()
+    text = f"{item.title} {item.raw_text}".lower()
+    text_direction = _text_direction(text)
+    penalty = 0.0
+    reasons: list[str] = []
+    force_hold = False
+
+    if bias == "bullish" and text_direction <= -2:
+        force_hold = True
+        penalty += 0.28
+        reasons.append("bullish classification conflicts with negative source text")
+    elif bias == "bearish" and text_direction >= 2:
+        force_hold = True
+        penalty += 0.28
+        reasons.append("bearish classification conflicts with positive source text")
+
+    if bool(classification.get("requires_human_review", False)):
+        penalty += 0.12
+        reasons.append("classifier requested human review")
+
+    if "market_relevance" in classification:
+        relevance = _bounded(float(classification.get("market_relevance") or 0), 0, 100)
+        if relevance < 35:
+            force_hold = True
+            penalty += 0.16
+            reasons.append("low market relevance")
+        elif relevance < 55:
+            penalty += 0.08
+            reasons.append("modest market relevance")
+
+    if "evidence" in classification and not classification.get("evidence"):
+        penalty += 0.08
+        reasons.append("no explicit evidence supplied")
+
+    source_reliability = str(classification.get("source_reliability") or "").lower()
+    if source_reliability == "low":
+        penalty += 0.12
+        reasons.append("classifier marked source reliability low")
+
+    age_days = _age_days(item.published_at)
+    if age_days is not None:
+        if item.source == "yahoo_rss" and age_days > 3:
+            force_hold = True
+            penalty += 0.18
+            reasons.append("stale RSS item")
+        elif age_days > 14:
+            force_hold = True
+            penalty += 0.12
+            reasons.append("stale source item")
+
+    if item.source == "yahoo_rss" and any(phrase in text for phrase in PROMOTIONAL_OR_LOW_SIGNAL):
+        penalty += 0.12
+        reasons.append("promotional or low-signal headline language")
+
+    if event_type == "macro" and item.source == "yahoo_rss" and abs(surprise) > 0:
+        relevance = float(classification.get("market_relevance") or 0) if "market_relevance" in classification else 50.0
+        if relevance < 70:
+            force_hold = True
+            penalty += 0.10
+            reasons.append("macro RSS item needs high ticker-specific relevance")
+
+    return {
+        "penalty": _bounded(penalty, 0.0, 0.55),
+        "force_hold": force_hold,
+        "reason": "; ".join(reasons) if reasons else "none",
+    }
+
+
+def _text_direction(text: str) -> int:
+    bullish_hits = sum(1 for phrase in BULLISH if phrase in text)
+    bearish_hits = sum(1 for phrase in BEARISH if phrase in text)
+    if "not bullish" in text or "less bullish" in text:
+        bearish_hits += 1
+    if "not bearish" in text or "less bearish" in text:
+        bullish_hits += 1
+    return bullish_hits - bearish_hits
+
+
+def _age_days(published_at: str) -> int | None:
+    if not published_at:
+        return None
+    value = published_at.strip()
+    try:
+        if value.endswith("Z"):
+            parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+        else:
+            parsed = datetime.fromisoformat(value)
+    except ValueError:
+        for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z", "%Y-%m-%d"):
+            try:
+                parsed = datetime.strptime(value, fmt)
+                break
+            except ValueError:
+                parsed = None
+        if parsed is None:
+            return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    return max(0, (now.date() - parsed.astimezone(timezone.utc).date()).days)
 
 
 def _direction(classification: dict, surprise: float) -> float:
@@ -301,6 +447,7 @@ def _reason(
     priced_in_penalty: float,
     pead: float,
     dip_reason: str | None = None,
+    guard_reason: str | None = None,
 ) -> str:
     direction_text = "bullish" if direction > 0 else "bearish" if direction < 0 else "unclear"
     parts = [
@@ -315,6 +462,8 @@ def _reason(
         parts.append("priced-in run-up penalty applied")
     if dip_reason:
         parts.append(dip_reason)
+    if guard_reason and guard_reason != "none":
+        parts.append(f"classification guard: {guard_reason}")
     parts.append(item.title)
     return "; ".join(parts)
 

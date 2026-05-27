@@ -121,6 +121,10 @@ If a stock has already run hard before a known event, the bot becomes more cauti
 
 The bot checks whether the stock's latest move agrees with the event direction and whether volume looks elevated. Price reaction is not treated as truth, but it is treated as evidence.
 
+### Classification Guardrails
+
+Codex is useful, but it can still misread a headline. Before any paper order can pass risk checks, a post-classification guard looks for bullish labels on negative operating text, stale RSS items, low market relevance, missing evidence, low source reliability, promotional listicle language, and macro stories that are not clearly ticker-specific. These guards can reduce confidence or force a hold even when Codex produced a confident classification.
+
 ### Post-Earnings Follow-Through
 
 For earnings and guidance events, the system gives some attention to the idea that markets can underreact at first and drift afterward. This is handled cautiously and only as one part of the score.

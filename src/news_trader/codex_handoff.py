@@ -67,6 +67,8 @@ def collect_for_codex(config: AppConfig, db_path: Path, pending_path: Path | Non
         "instructions": [
             "Classify every pending event. Do not omit events.",
             "Use only source_item text/title/url/source and supplied context.",
+            "Do not classify negative operating evidence as bullish unless the same source item gives a clear offsetting positive surprise.",
+            "Treat generic listicles, promotional language, stale news, or ambiguous company references as low-confidence and likely human-review items.",
             "Return classifications in data/codex_classifications.json.",
             "Do not include trading actions, sizes, or broker instructions.",
         ],

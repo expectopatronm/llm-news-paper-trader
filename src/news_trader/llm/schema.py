@@ -54,7 +54,7 @@ def normalize_classification(raw: dict, ticker: str, source: str) -> dict:
     reliability = _enum(raw.get("source_reliability"), SOURCE_RELIABILITY, _default_reliability(source))
     bias = _enum(raw.get("directional_bias"), DIRECTIONAL_BIAS, "unclear")
     return {
-        "ticker": str(raw.get("ticker") or ticker).upper(),
+        "ticker": ticker.upper(),
         "event_type": event_type,
         "summary": _text(raw.get("summary"), "No summary supplied.", 500),
         "source_reliability": reliability,

@@ -1,4 +1,5 @@
 import unittest
+from datetime import date, timedelta
 
 from news_trader.config import TradingConfig
 from news_trader.signals.scoring import build_signal
@@ -37,7 +38,7 @@ class ScoringTests(unittest.TestCase):
             source_id="1",
             title="NVIDIA beats expectations and raises guidance",
             url="https://example.com",
-            published_at="2026-05-25",
+            published_at=date.today().isoformat(),
             raw_text="Revenue beat expectations and the company raises guidance.",
         )
         features = MarketFeatures(
@@ -93,7 +94,7 @@ class ScoringTests(unittest.TestCase):
             source_id="dip",
             title="Apple shares fall despite no company-specific thesis break",
             url="https://example.com",
-            published_at="2026-05-26",
+            published_at=date.today().isoformat(),
             raw_text="Shares fell with broad concern, but no guidance cut or regulatory filing was cited.",
         )
         features = MarketFeatures(
@@ -150,7 +151,7 @@ class ScoringTests(unittest.TestCase):
             source_id="bad-dip",
             title="Apple files 8-K after cutting guidance",
             url="https://example.com",
-            published_at="2026-05-26",
+            published_at=date.today().isoformat(),
             raw_text="The company cuts guidance.",
         )
         features = MarketFeatures(
@@ -175,6 +176,134 @@ class ScoringTests(unittest.TestCase):
         )
         self.assertEqual(signal.components["buy_dip_active"], "false")
         self.assertNotEqual(signal.action, "buy")
+
+    def test_contradictory_bullish_classification_is_forced_to_hold(self):
+        trading = TradingConfig(
+            starting_cash_usd=1000.0,
+            base_position_pct=0.15,
+            max_position_pct=0.30,
+            max_short_position_pct=0.25,
+            max_gross_exposure_pct=1.50,
+            max_new_trades_per_day=0,
+            min_confidence=0.55,
+            max_drawdown_pct=0.10,
+            allow_shorts=True,
+            allow_fractional=True,
+            min_notional_usd=10.0,
+            paper_broker="local",
+            pead_follow_through_weight=0.10,
+            priced_in_penalty_weight=0.10,
+            buy_dip_enabled=True,
+            buy_dip_min_drop_1d=-0.025,
+            buy_dip_min_relative_drop_spy=-0.015,
+            buy_dip_min_relative_drop_qqq_5d=-0.025,
+            buy_dip_volume_ratio_min=1.05,
+            buy_dip_confidence_boost=0.22,
+            buy_dip_position_multiplier=0.70,
+        )
+        item = SourceItem(
+            ticker="AAPL",
+            source="yahoo_rss",
+            source_id="bad-bullish",
+            title="Apple smartphone sales are tumbling as demand weakens",
+            url="https://example.com",
+            published_at=date.today().isoformat(),
+            raw_text="Shipments fall and analysts warn of weak demand.",
+        )
+        features = MarketFeatures(
+            symbol="AAPL",
+            latest_price=100.0,
+            return_1d=-0.02,
+            return_5d=-0.03,
+            return_20d=-0.01,
+            relative_return_1d_spy=-0.02,
+            relative_return_5d_spy=-0.03,
+            relative_return_5d_qqq=-0.03,
+            volume_ratio_20d=1.2,
+        )
+        signal = build_signal(
+            item,
+            {
+                "event_type": "macro",
+                "directional_bias": "bullish",
+                "confidence": 0.9,
+                "source_reliability": "medium",
+                "market_relevance": 65,
+                "requires_human_review": False,
+                "evidence": ["smartphone sales are tumbling"],
+            },
+            features,
+            trading,
+            portfolio_equity=1000.0,
+            existing_quantity=0.0,
+            upcoming_events=[],
+        )
+        self.assertEqual(signal.action, "hold")
+        self.assertEqual(signal.components["classification_guard_force_hold"], "true")
+
+    def test_stale_rss_item_is_forced_to_hold(self):
+        trading = TradingConfig(
+            starting_cash_usd=1000.0,
+            base_position_pct=0.15,
+            max_position_pct=0.30,
+            max_short_position_pct=0.25,
+            max_gross_exposure_pct=1.50,
+            max_new_trades_per_day=0,
+            min_confidence=0.55,
+            max_drawdown_pct=0.10,
+            allow_shorts=True,
+            allow_fractional=True,
+            min_notional_usd=10.0,
+            paper_broker="local",
+            pead_follow_through_weight=0.10,
+            priced_in_penalty_weight=0.10,
+            buy_dip_enabled=True,
+            buy_dip_min_drop_1d=-0.025,
+            buy_dip_min_relative_drop_spy=-0.015,
+            buy_dip_min_relative_drop_qqq_5d=-0.025,
+            buy_dip_volume_ratio_min=1.05,
+            buy_dip_confidence_boost=0.22,
+            buy_dip_position_multiplier=0.70,
+        )
+        item = SourceItem(
+            ticker="MSFT",
+            source="yahoo_rss",
+            source_id="stale",
+            title="Microsoft beats expectations and raises guidance",
+            url="https://example.com",
+            published_at=(date.today() - timedelta(days=7)).isoformat(),
+            raw_text="Revenue beat expectations and the company raised guidance.",
+        )
+        features = MarketFeatures(
+            symbol="MSFT",
+            latest_price=100.0,
+            return_1d=0.04,
+            return_5d=0.05,
+            return_20d=0.08,
+            relative_return_1d_spy=0.03,
+            relative_return_5d_spy=0.04,
+            relative_return_5d_qqq=0.03,
+            volume_ratio_20d=1.4,
+        )
+        signal = build_signal(
+            item,
+            {
+                "event_type": "earnings",
+                "directional_bias": "bullish",
+                "confidence": 0.95,
+                "source_reliability": "medium",
+                "market_relevance": 90,
+                "requires_human_review": False,
+                "evidence": ["beats expectations and raises guidance"],
+            },
+            features,
+            trading,
+            portfolio_equity=1000.0,
+            existing_quantity=0.0,
+            upcoming_events=[],
+        )
+        self.assertEqual(signal.action, "hold")
+        self.assertEqual(signal.components["classification_guard_force_hold"], "true")
 
 
 if __name__ == "__main__":
