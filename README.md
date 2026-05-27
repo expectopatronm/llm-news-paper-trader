@@ -208,6 +208,8 @@ The bot has several ways to say no:
 
 The system is intentionally biased toward not trading unless the evidence clears several gates.
 
+The current paper experiment uses a more active risk profile than the first conservative version: lower confidence threshold, slightly larger base position sizing, and broader exposure limits. It is still bounded, still paper-only, and still blocks obvious thesis-breaking dips.
+
 ---
 
 ## Automation

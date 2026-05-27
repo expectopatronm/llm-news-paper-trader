@@ -26,20 +26,20 @@ SOURCE_RELIABILITY = {
     "manual_calendar": 0.22,
     "event_calendar": 0.18,
     "company_ir": 0.24,
-    "yahoo_rss": 0.10,
+    "yahoo_rss": 0.14,
 }
 
 EVENT_IMPORTANCE = {
     "earnings": 0.22,
     "guidance": 0.24,
     "legal": 0.20,
-    "analyst": 0.14,
-    "product": 0.12,
+    "analyst": 0.17,
+    "product": 0.16,
     "capital_return": 0.16,
     "m_and_a": 0.22,
-    "macro": 0.12,
+    "macro": 0.14,
     "filing": 0.10,
-    "other": 0.04,
+    "other": 0.08,
 }
 
 BULLISH = [
@@ -56,6 +56,16 @@ BULLISH = [
     "acquisition",
     "approval",
     "wins",
+    "buy",
+    "boost",
+    "rebound",
+    "record high",
+    "cheap",
+    "perfect time",
+    "well-positioned",
+    "demand",
+    "expansion",
+    "lead",
 ]
 
 BEARISH = [
@@ -73,6 +83,13 @@ BEARISH = [
     "resigns",
     "recall",
     "delay",
+    "decline",
+    "falls",
+    "slump",
+    "pressure",
+    "risk",
+    "warning",
+    "struggling",
 ]
 
 

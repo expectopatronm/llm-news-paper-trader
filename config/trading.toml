@@ -1,10 +1,10 @@
 starting_cash_usd = 1000.0
-base_position_pct = 0.12
-max_position_pct = 0.25
-max_short_position_pct = 0.20
-max_gross_exposure_pct = 1.25
+base_position_pct = 0.15
+max_position_pct = 0.30
+max_short_position_pct = 0.25
+max_gross_exposure_pct = 1.50
 max_new_trades_per_day = 0
-min_confidence = 0.68
+min_confidence = 0.55
 max_drawdown_pct = 0.10
 allow_shorts = true
 allow_fractional = true
@@ -12,16 +12,16 @@ min_notional_usd = 10.0
 paper_broker = "local"
 
 # Higher means the bot is more willing to trade after the first market reaction.
-pead_follow_through_weight = 0.08
+pead_follow_through_weight = 0.10
 
 # Higher means the bot is more cautious when a stock has already run up before an event.
-priced_in_penalty_weight = 0.12
+priced_in_penalty_weight = 0.10
 
 # Event-aware buy-the-dip / overreaction module.
 buy_dip_enabled = true
-buy_dip_min_drop_1d = -0.03
-buy_dip_min_relative_drop_spy = -0.02
-buy_dip_min_relative_drop_qqq_5d = -0.03
-buy_dip_volume_ratio_min = 1.10
-buy_dip_confidence_boost = 0.18
-buy_dip_position_multiplier = 0.55
+buy_dip_min_drop_1d = -0.025
+buy_dip_min_relative_drop_spy = -0.015
+buy_dip_min_relative_drop_qqq_5d = -0.025
+buy_dip_volume_ratio_min = 1.05
+buy_dip_confidence_boost = 0.22
+buy_dip_position_multiplier = 0.70
