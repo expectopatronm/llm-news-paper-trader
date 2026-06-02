@@ -37,6 +37,11 @@ class TradingConfig:
     buy_dip_volume_ratio_min: float
     buy_dip_confidence_boost: float
     buy_dip_position_multiplier: float
+    derisk_enabled: bool
+    derisk_drawdown_pct: float
+    derisk_target_gross_exposure_pct: float
+    derisk_step_exposure_pct: float
+    derisk_min_position_loss_pct: float
 
 
 @dataclass(frozen=True)

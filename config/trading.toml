@@ -25,3 +25,10 @@ buy_dip_min_relative_drop_qqq_5d = -0.025
 buy_dip_volume_ratio_min = 1.05
 buy_dip_confidence_boost = 0.22
 buy_dip_position_multiplier = 0.70
+
+# Active drawdown de-risking. This reduces old exposure instead of only blocking new trades.
+derisk_enabled = true
+derisk_drawdown_pct = 0.03
+derisk_target_gross_exposure_pct = 1.10
+derisk_step_exposure_pct = 0.25
+derisk_min_position_loss_pct = 0.01

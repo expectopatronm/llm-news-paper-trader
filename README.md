@@ -125,6 +125,10 @@ The bot checks whether the stock's latest move agrees with the event direction a
 
 Codex is useful, but it can still misread a headline. Before any paper order can pass risk checks, a post-classification guard looks for bullish labels on negative operating text, stale RSS items, low market relevance, missing evidence, low source reliability, promotional listicle language, and macro stories that are not clearly ticker-specific. These guards can reduce confidence or force a hold even when Codex produced a confident classification.
 
+### Drawdown De-Risking
+
+The bot no longer only blocks new trades when the portfolio is already under pressure. If equity falls far enough below the recorded peak and gross exposure is still high, the trading engine can automatically trim exposure before evaluating new event signals. It starts with the worst losing position and closes only a capped slice per run, so the response is active but not a full panic exit.
+
 ### Post-Earnings Follow-Through
 
 For earnings and guidance events, the system gives some attention to the idea that markets can underreact at first and drift afterward. This is handled cautiously and only as one part of the score.

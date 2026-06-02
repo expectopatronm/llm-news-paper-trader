@@ -23,11 +23,11 @@ class LocalPaperBroker:
         if action == "buy":
             return self._buy(ticker, price, notional_usd, reason)
         if action == "sell":
-            return self._sell(ticker, price, reason)
+            return self._sell(ticker, price, notional_usd, reason)
         if action == "short":
             return self._short(ticker, price, notional_usd, reason)
         if action == "cover":
-            return self._cover(ticker, price, reason)
+            return self._cover(ticker, price, notional_usd, reason)
         return OrderResult(False, "Decision was hold")
 
     def _buy(self, ticker: str, price: float, notional_usd: float, reason: str) -> OrderResult:
@@ -52,16 +52,23 @@ class LocalPaperBroker:
         self.store.insert_trade(ticker, "buy", qty, price, reason)
         return OrderResult(True, f"Bought {qty:.4f} {ticker} at {price:.2f}")
 
-    def _sell(self, ticker: str, price: float, reason: str) -> OrderResult:
+    def _sell(self, ticker: str, price: float, notional_usd: float, reason: str) -> OrderResult:
         existing = self.store.position(ticker)
         if not existing:
             return OrderResult(False, "No existing position to sell")
         qty = float(existing["quantity"])
         if qty <= 0:
             return OrderResult(False, "No long position to sell")
+        if notional_usd > 0:
+            qty = min(qty, notional_usd / price)
+            if not self.allow_fractional:
+                qty = int(qty)
+            if qty <= 0:
+                return OrderResult(False, "Quantity rounded to zero")
         cash = self.store.cash()
         self.store.set_cash(cash + qty * price)
-        self.store.upsert_position(ticker, 0, 0)
+        remaining = float(existing["quantity"]) - qty
+        self.store.upsert_position(ticker, remaining, float(existing["avg_price"]) if remaining > 0 else 0)
         self.store.insert_trade(ticker, "sell", qty, price, reason)
         return OrderResult(True, f"Sold {qty:.4f} {ticker} at {price:.2f}")
 
@@ -86,7 +93,7 @@ class LocalPaperBroker:
         self.store.insert_trade(ticker, "short", -qty, price, reason)
         return OrderResult(True, f"Shorted {qty:.4f} {ticker} at {price:.2f}")
 
-    def _cover(self, ticker: str, price: float, reason: str) -> OrderResult:
+    def _cover(self, ticker: str, price: float, notional_usd: float, reason: str) -> OrderResult:
         existing = self.store.position(ticker)
         if not existing:
             return OrderResult(False, "No existing short to cover")
@@ -94,11 +101,18 @@ class LocalPaperBroker:
         if qty >= 0:
             return OrderResult(False, "No short position to cover")
         cover_qty = abs(qty)
+        if notional_usd > 0:
+            cover_qty = min(cover_qty, notional_usd / price)
+            if not self.allow_fractional:
+                cover_qty = int(cover_qty)
+            if cover_qty <= 0:
+                return OrderResult(False, "Quantity rounded to zero")
         cost = cover_qty * price
         cash = self.store.cash()
         if cash < cost:
             return OrderResult(False, "Not enough cash to cover short")
         self.store.set_cash(cash - cost)
-        self.store.upsert_position(ticker, 0, 0)
+        remaining = float(existing["quantity"]) + cover_qty
+        self.store.upsert_position(ticker, remaining, float(existing["avg_price"]) if remaining < 0 else 0)
         self.store.insert_trade(ticker, "cover", cover_qty, price, reason)
         return OrderResult(True, f"Covered {cover_qty:.4f} {ticker} at {price:.2f}")

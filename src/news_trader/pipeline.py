@@ -7,6 +7,7 @@ from news_trader.config import AppConfig
 from news_trader.llm.client import DecisionClient
 from news_trader.market_hours import is_us_market_open
 from news_trader.signals.adaptive import load_adaptive_state
+from news_trader.signals.derisk import apply_drawdown_derisk
 from news_trader.signals.risk import RiskEngine
 from news_trader.signals.scoring import build_signal
 from news_trader.sources import event_calendar, market_data, sec_edgar, yahoo_rss
@@ -83,6 +84,11 @@ def run_once(config: AppConfig, db_path: Path) -> None:
     market_open = is_us_market_open(market_timezone=config.schedule.market_timezone)
     if config.schedule.trade_market_hours_only and not market_open:
         print("US market is closed. Scanning and logging only; no trades will be placed.")
+    else:
+        derisk = apply_drawdown_derisk(store, broker, config.trading, mark)
+        if derisk.triggered:
+            print(f"De-risk check: {derisk.reason}")
+            mark = derisk.mark
 
     new_events = 0
     submitted_orders = 0

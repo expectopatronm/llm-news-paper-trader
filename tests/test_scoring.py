@@ -31,6 +31,11 @@ class ScoringTests(unittest.TestCase):
             buy_dip_volume_ratio_min=1.10,
             buy_dip_confidence_boost=0.18,
             buy_dip_position_multiplier=0.55,
+            derisk_enabled=True,
+            derisk_drawdown_pct=0.03,
+            derisk_target_gross_exposure_pct=1.10,
+            derisk_step_exposure_pct=0.25,
+            derisk_min_position_loss_pct=0.01,
         )
         item = SourceItem(
             ticker="NVDA",
@@ -87,6 +92,11 @@ class ScoringTests(unittest.TestCase):
             buy_dip_volume_ratio_min=1.10,
             buy_dip_confidence_boost=0.18,
             buy_dip_position_multiplier=0.55,
+            derisk_enabled=True,
+            derisk_drawdown_pct=0.03,
+            derisk_target_gross_exposure_pct=1.10,
+            derisk_step_exposure_pct=0.25,
+            derisk_min_position_loss_pct=0.01,
         )
         item = SourceItem(
             ticker="AAPL",
@@ -144,6 +154,11 @@ class ScoringTests(unittest.TestCase):
             buy_dip_volume_ratio_min=1.10,
             buy_dip_confidence_boost=0.18,
             buy_dip_position_multiplier=0.55,
+            derisk_enabled=True,
+            derisk_drawdown_pct=0.03,
+            derisk_target_gross_exposure_pct=1.10,
+            derisk_step_exposure_pct=0.25,
+            derisk_min_position_loss_pct=0.01,
         )
         item = SourceItem(
             ticker="AAPL",
@@ -200,6 +215,11 @@ class ScoringTests(unittest.TestCase):
             buy_dip_volume_ratio_min=1.05,
             buy_dip_confidence_boost=0.22,
             buy_dip_position_multiplier=0.70,
+            derisk_enabled=True,
+            derisk_drawdown_pct=0.03,
+            derisk_target_gross_exposure_pct=1.10,
+            derisk_step_exposure_pct=0.25,
+            derisk_min_position_loss_pct=0.01,
         )
         item = SourceItem(
             ticker="AAPL",
@@ -264,6 +284,11 @@ class ScoringTests(unittest.TestCase):
             buy_dip_volume_ratio_min=1.05,
             buy_dip_confidence_boost=0.22,
             buy_dip_position_multiplier=0.70,
+            derisk_enabled=True,
+            derisk_drawdown_pct=0.03,
+            derisk_target_gross_exposure_pct=1.10,
+            derisk_step_exposure_pct=0.25,
+            derisk_min_position_loss_pct=0.01,
         )
         item = SourceItem(
             ticker="MSFT",
